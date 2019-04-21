@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Logan Gilbert</title>
+    <link>/posts/</link>
+    <description>Recent content in Posts on Logan Gilbert</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Apr 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Thursday Thoughts 1</title>
+      <link>/posts/thursday-thoughts-1/</link>
+      <pubDate>Thu, 18 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/thursday-thoughts-1/</guid>
+      <description>Combining Fields/Skills I believe Scott Adams and Marc Andreeson have advocated the same idea: that it is valuable to be good (though probably not exceptional) at two or three or four things. Because of diminishing returns to practice and the comparative difficulty of finding brilliant mentors/getting into elite grad schools/committing several years to a single endeavor, it is probably generally easier to get good at a few separate things than to optimize along a single dimension.</description>
+    </item>
+    
+    <item>
+      <title>Matching Market Examples</title>
+      <link>/posts/matching-market-examples/</link>
+      <pubDate>Fri, 12 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/matching-market-examples/</guid>
+      <description>A matching market is one in which parties have to be personally matched to each other because they have preferences about whom they transact with; a market price alone is insufficient to determine who should interact with whom. Examples include employees &amp;amp; firms, graduate students &amp;amp; advisors, and romantic partners.
+Another example is professional collaborators - e.g. scientists or artists whose interests and skills complement each other. Of the three examples above, one (graduate students &amp;amp; advisors) features few options available to both parties.</description>
+    </item>
+    
+    <item>
+      <title>Policymaking as Game Design</title>
+      <link>/posts/policymaking-as-game-design/</link>
+      <pubDate>Thu, 11 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/policymaking-as-game-design/</guid>
+      <description>If laws are the rules of the game of life, then crafting those laws is the process of designing a particular type of game. The question then becomes - what kind of game would you like to play? Or perhaps, what kind of game should you like to play? Or even, what kind of game do you think other people would like to play? In any case, this perspective is less emotionally-laden than political discussions often are.</description>
+    </item>
+    
+    <item>
+      <title>Ergodicity Economics</title>
+      <link>/posts/ergodicity-economics/</link>
+      <pubDate>Thu, 10 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/ergodicity-economics/</guid>
+      <description>This is a curation of the highlights from some lecture notes by Ole Peters and Alexander Adamou.
+Defining Ergodicity Classical economics is based on the assumption that the rational economic decision is the one that maximizes the actor&amp;rsquo;s expected value. And indeed, individuals should act to maximize something, but expected value is not quite that something. The expected value measures what happens across individuals, but individuals want to know what will happen across time.</description>
+    </item>
+    
+    <item>
+      <title>Genetics Data Cleaning</title>
+      <link>/posts/genetics-data-cleaning/</link>
+      <pubDate>Thu, 20 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/genetics-data-cleaning/</guid>
+      <description>This code accompanies two datasets on the effects of 10,000 SNPs (single-nucleotide polymorphisms) on two traits, A and B. Each dataset includes an ID number indicating the location of the SNP on the chromosome, the two alleles (A, T, C, or G) that occur in that position, the frequency with which the alleles occur, an estimate of the effect size of the SNP on trait A or B, and the z-score produced when the null hypothesis (that the given SNP has no effect on the given trait) was tested.</description>
+    </item>
+    
+    <item>
+      <title>Undergraduate Papers</title>
+      <link>/posts/undergraduate-papers/</link>
+      <pubDate>Sat, 24 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/undergraduate-papers/</guid>
+      <description>You can find papers on Bayesian network detection (my thesis), the calculus of variations (my final project for a course in PDE&amp;rsquo;s), and the surreal numbers (my final project for an introductory analysis course) here.</description>
+    </item>
+    
+    <item>
+      <title>Simulating Voting in a Legislative Body</title>
+      <link>/posts/simulating-voting-in-a-legislative-body/</link>
+      <pubDate>Fri, 09 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/simulating-voting-in-a-legislative-body/</guid>
+      <description>It is interesting to consider what determines the outcome of roll-call votes in legislative bodies. There are likely many interconnected factors, including lobby influence, political deals, demands from the constituents, and media portrayals. In this post I’m going to ignore all of those factors and model voting based on just one dimension at a time: liberal/conservative (i.e. left/right) or conservative/progressive (i.e. resistant to or enthusiastic about change). In later posts maybe we can incorporate other factors and/or compare this model to real voting behavior.</description>
+    </item>
+    
+    <item>
+      <title>The Barabasi-Albert Model</title>
+      <link>/posts/the-barabasi-albert-model/</link>
+      <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/the-barabasi-albert-model/</guid>
+      <description>Take the network of websites, where each node is a site and each link is a&amp;hellip;hyperlink. A handful of sites (Facebook, Google, Amazon) have an enormous number of links to them, while most sites have only a handful of links. To be more precise, the degree distribution follows a power law, i.e. $f(x) \propto x^{-k}$ for some value of k. The question arises: why are the degrees distributed in this way?</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Categorizing Probability Distributions | Logan Gilbert</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async src="path-to-mathjax/MathJax.js?config=TeX-AMS_CHTML"></script>
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/projects/">Projects</a></li>
+      
+      <li><a href="/essays/">Essays</a></li>
+      
+      <li><a href="/qh/">Q &amp; H</a></li>
+      
+      <li><a href="/posts/">Blog</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Categorizing Probability Distributions</span></h1>
+
+<h2 class="date">2018/11/03</h2>
+</div>
+
+<main>
+
+
+<p>There are two fundamental tasks one might use statistics for:
+1. Predicting outcomes. You have a model of a how a process works and want to know what sort of data it will generate.
+2. Understanding outcomes. You have data and want to know what sort of model generated it.
+We can use these tasks to guide our organization of common probability distributions.</p>
+
+<h3 id="1-predicting-outcomes-model-known-data-unknown">1. Predicting Outcomes (model known, data unknown)</h3>
+
+<p>Let&rsquo;s start with the first task: model is known; data is not. In this case we might be interested in questions like the following:
+ - How likely is &lsquo;success&rsquo;? (however you define it)
+ - How likely are $r$ successes?
+ - How long can I expect to wait before achieving a success (or $r$ successes)?
+ - How likely is a large success?</p>
+
+<p>The table below organizes the most common distributions used to answer these types of questions.</p>
+
+<p><img src="/post/2018-11-03-categorizing-probability-distributions_files/distributions.PNG" alt="" /></p>
+
+<p>Questions and improvements for later:
+ - What goes in the remaining box?
+ - Include pdfs with annotations and derivations</p>
+
+<p>The distributions above will answer any question you have about a handful of very simple, well-defined processes. But not every process you&rsquo;d like to study will be so simple. Maybe you only have a partial model to describe the process you&rsquo;re studying. In that case, instead of asking for the whole probability distribution describing your phenomena, you may have to settle for answers to questions like these:
+ - How does the sample mean behave? Is it different from another sample mean I&rsquo;m studying?
+ - How do the extreme values (maxima and minima) behave?</p>
+
+<p>These questions bring us to our next classes of distributions.</p>
+
+<h4 id="mean-behavior-the-gaussian-and-his-friends">Mean Behavior: the Gaussian and his Friends</h4>
+
+<p>As long as your data points are i.i.d. and come from a distribution with finite mean and variance (which is not guaranteed - see power law distributions with $\alpha &lt; 2$ for undefined variance and $\alpha \leq 1$ for undefined mean), the distribution of sample means converges to the Normal distribution. This is the Central Limit Theorem. If your i.i.d. data do not have finite variance, but have nice enough tail behavior, the Gnedenko &amp; Kolmogorov generalization may still apply: the sum of i.i.d. random variables with power law tails decreasing according to $\mid x \mid^{- \alpha -1}$ tends towards a stable distribution with stability index $\alpha$.</p>
+
+<p>Sidenote: a &ldquo;stable&rdquo; distribution is one in which linear combinations of the variables are distributed according to a scaled version of the generating distribution. This feature makes stable distributions candidates for CLT-like results. The only stable distributions whose pdfs can be expressed analytically are the Normal, Cauchy, and Lévy. Note that all stable distributions except the Normal are fat-tailed. There are many variations and extensions of the classical CLT, but we&rsquo;ll leave those for another time.</p>
+
+<p>So the Normal distribution will tell you how likely your sample mean is to be within a certain range, but there are more nuanced questions you might have regarding the mean. For those, you&rsquo;ll need the distributions below.</p>
+
+<p><img src="/post/2018-11-03-categorizing-probability-distributions_files/distributions1.PNG" alt="" /></p>
+
+<p>Questions and improvements for later:
+ - What conditions are necessary for the distribution of sample means to converge to the Cauchy or Lévy distributions?</p>
+
+<h4 id="extreme-behavior">Extreme Behavior</h4>
+
+<p>To sate your curiosity on the topic of maxima, here&rsquo;s the Extreme Value Theorem: if the distribution of a (normalized) maximum of i.i.d. random variables converges (it might not), then it converges to the Gumbel, Fréchet, or Weibull distributions, all of which are special cases of the Generalized Extreme Value Distribution.</p>
+
+<p>If you&rsquo;re interested in how large the smallest or $k$th smallest data point in your sample is likely to be, you&rsquo;ll want to investigate your distribution&rsquo;s order statistics. The order statistics from an arbitrary distribution are not likely to be &lsquo;nice&rsquo;, but there is one special case worth noting. The $k$th smallest observation from a sample of size $n$ from the unit uniform distribution has distribution $\textrm{Beta}(k, n+1-k)$.</p>
+
+<h3 id="2-understanding-outcomes-data-known-model-unknown">2. Understanding Outcomes (data known, model unknown)</h3>
+
+<p>There are varying degrees of ignorance one might have on this front. If you have a distribution in mind but don&rsquo;t know its parameters, you can use maximum likelihood estimation to find them. If you choose your prior probability distribution of the parameter poorly, you&rsquo;ll encounter a nasty integral from Bayes theorem: $$ p(\theta\mid x)=\frac{p(\theta)p(x \mid \theta)}{\int p(x \mid \theta)p(\theta)d\theta}. $$ Thus, it&rsquo;s best to choose a conjugate prior to match your likelihood function.</p>
+
+<p>This provides a nice computational, if not conceptual, reason for the Beta, Gamma, and Pareto distributions. The Beta distribution is a conjugate prior for the Bernoulli, Binomial, Negative Binomial, and Geometric distributions. Gamma is a conjugate prior for Poisson, Pareto (when the unknown parameter is $k$), Log-Normal ($\tau$), Exponential, and Gamma ($\beta$). Pareto is a conjugate prior for the uniform distribution.</p>
+
+<p>Note: this provides us with another way to think about the Beta distribution. It is (or can be) the (prior or posterior) distribution of the parameter $p$.</p>
+
+<p>If you truly know nothing about the value of your parameter, then you should choose a prior that reflects that. The Jeffreys prior ($\textrm{Beta}(\frac{1}{2}, \frac{1}{2})$) is one such choice. If the variance is fixed, the Normal distribution is the prior that provides the least information (i.e. the maximum entropy).</p>
+
+<p>If you not only don&rsquo;t know the parameters for your data but also don&rsquo;t know what distribution it&rsquo;s coming from, you might try a goodness-of-fit test. If your data is vaguely bell-shaped, then one of the distributions we&rsquo;ve mentioned so far is likely a good fit. But if it&rsquo;s more L-shaped, you&rsquo;ll need a different model. Enter the heavyweight division.</p>
+
+<h4 id="fat-tails">Fat Tails</h4>
+
+<p>We can classify distributions with regard to the fatness of their tails by comparing them to the Exponential family. Any distribution whose tails are lighter is considered &lsquo;light-tailed&rsquo;; conversely for &lsquo;heavy-tailed&rsquo;.</p>
+
+<p>Within the class of heavy-tailed distributions there are some subclasses:</p>
+
+<ul>
+<li><p>Regularly varying: A probability distribution is &lsquo;regularly varying&rsquo; if the function $1-F<em>x(x)$  is &lsquo;regularly varying with index -\alpha&rsquo;; an arbitrary function is regularly varying with index -\alpha if \lim</em>{x\to \infty} \frac{f(tx)}{f(x)}=t^{-\alpha} for all t&gt;0. Intuitively, such distributions are scale-invariant since asymptotically f(tx) = t^\alpha f(x). The most common example is the Pareto distribution.</p></li>
+
+<li><p>Subexponential: Let $S_n$ be the sum of $n$ samples from a distribution. Also let $M_n$ be the max of that sample and suppose $n \geq 2$. Then the distribution is subexponential if $\mathbb{P}(S_n &gt; x) \approx n\mathbb{P}(X&gt;x) \approx \mathbb{P}(M_n&gt;x)$ as $x \to \infty$. In words, the sum of samples is driven by the max of the sample. This is known as the catastrophe principle - if something big happened, it was likely because of one enormous event (a catastrophe), not many events slightly larger than average (a conspiracy).</p></li>
+
+<li><p>Long-tailed: A function $f(x)$ is long-tailed if $\lim_{x\to\infty} \frac{f(x+y)}{f(x)} =1$ for all $y&gt;0$. One way to conceive of such a distribution is as a model for wait times in which the longer one waits, the longer one should expect to wait. This is the Lindy effect.</p></li>
+</ul>
+
+<p>Question: What underlying properties/processes give rise to fat-tailed distributions?</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<script async src="//yihui.name/js/center-img.js"></script>
+
+  
+  <hr/>
+  &copy; Logan Gilbert 2018-present
+  
+  </footer>
+  </body>
+</html>
+

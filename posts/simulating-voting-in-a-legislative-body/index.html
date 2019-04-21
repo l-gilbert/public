@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulating Voting in a Legislative Body | Logan Gilbert</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async src="path-to-mathjax/MathJax.js?config=TeX-AMS_CHTML"></script>
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/projects/">Projects</a></li>
+      
+      <li><a href="/essays/">Essays</a></li>
+      
+      <li><a href="/qh/">Q &amp; H</a></li>
+      
+      <li><a href="/posts/">Blog</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Simulating Voting in a Legislative Body</span></h1>
+
+<h2 class="date">2018/11/09</h2>
+</div>
+
+<main>
+
+
+
+<p>It is interesting to consider what determines the outcome of roll-call votes in legislative bodies. There are likely many interconnected factors, including lobby influence, political deals, demands from the constituents, and media portrayals. In this post I’m going to ignore all of those factors and model voting based on just one dimension at a time: liberal/conservative (i.e. left/right) or conservative/progressive (i.e. resistant to or enthusiastic about change). In later posts maybe we can incorporate other factors and/or compare this model to real voting behavior.</p>
+<p>Here’s an overview of the code I wrote. First, we define a scale to place legislators and legislation along. If measuring along the liberal/conservative spectrum, I define the scale to go from -1 to 1. This has been done before; see e.g. the DWNOMINATE algorithm. If measuring along the conservative/progressive dimension, I set the scale from 0 to 1.</p>
+<p>After the scale is set, we simulate voting. We randomly generate a governing body with scores according to some predefined distribution. For the purposes of this post, I mostly use a mixture of two normal distributions (one to represent the stances of the Republicans and one for the Democrats). For the liberal/conservative scale, I assume that legislators will vote for any bill they perceive to be within a certain ‘radius’ of their ideal. For the conservative/progressive scale, I interpret the scores as the upper level of progressivism that each legislator will tolerate. As such, the model assumes they will vote for any bill whose score is less than theirs.</p>
+<p>The code is divided into three functions, each of which calls the previous one. The first:</p>
+<pre><code>############### Function: &#39;count_supporters&#39;
+## count_supporters takes a vector of legislator scores (could be conservative/progressive or something else). 
+## It then counts how many of the legislators support the bill
+## (i.e. a legislator is counted if his/her score lies within the radius of the bill&#39;s score)
+
+count_votes &lt;- function(Legislator_Scores, Bill_Score, radius){
+  votes = 0
+  for (i in Legislator_Scores) {
+    ## Set radius = 0 if you want to count votes for any legislation below the legislator&#39;s score
+    if (radius == 0 &amp;&amp; Bill_Score &lt; i){votes = votes + 1}
+    ## Otherwise only bills within the given radius will be voted for
+    else if (abs(i - Bill_Score) &lt; radius){votes = votes + 1}}
+  return(votes)
+}</code></pre>
+<p>The second:</p>
+<pre><code>############### Function: &#39;simulate_voting&#39; accepts a score and a radius. 
+## Randomly generates a legislative body with scores according to a normal mixture. 
+## Simulates voting by that body on a bill with the given score and tallies 
+## how often the bill passes. 
+
+simulate_voting &lt;- function(score, radius){
+  number_bills_passed = 0
+  for (i in 1:number_bills){
+    ## Simulate changes in attendance. If desired, fix as a constant. 
+    body_size = rbinom(1, 100, 0.97)
+    
+    ## Setting up a normal mixture to sample from
+    components = sample(1:2, prob=c(0.5, 0.5), size=body_size, replace=TRUE)
+    mus = c(-0.5, 0.5)
+    sds = c(0.1, 0.1)
+    
+    ## Defining politician scores according to the normal mixture distribution.
+    ## For a different distribution, delete the preceding two lines and replace
+    ## rnorm with the relevant function and parameters. 
+    legislator_scores = rnorm(n=body_size, mean=mus[components],sd=sds[components])
+    
+    ## If more than a simple majority is needed, replace body_size/2 with the desired amount.
+    if (count_votes(legislator_scores, score, radius) &gt; body_size/2){number_bills_passed = number_bills_passed + 1}
+  }
+  return(number_bills_passed)
+}</code></pre>
+<p>The third:</p>
+<pre><code>############### Function: &#39;tally_results&#39; accepts several parameters re: the legislative body
+## For every score desired, it records how many bills pass at that score.
+## The results are presented in a scatterplot. 
+tally_results &lt;- function(min_score, max_score, radius, number_bills, granularity){
+  
+  distribution = c() #vector containing number of bills that passed at each score
+  score_list = seq(min_score, max_score, (max_score - min_score)/granularity)
+  
+  for (i in score_list){
+    distribution = c(distribution, simulate_voting(i, radius))
+  }
+  plot(score_list, distribution, main = &quot;Distribution of Pass Rates&quot;, ylab = &quot;Number of Bills Passed&quot;, xlab = &quot;Bill Score&quot;)
+  
+}</code></pre>
+<p>Now let’s make some function calls. The code <code>tally_results(min_score = -1, max_score = 1, radius = 0.5, number_bills = 100, granularity = 100)</code> produces the following plot:</p>
+<p><img src="/post/2018-11-09-simulating-voting-in-a-legislative-body_files/senate1.png" /></p>
+<p>Obviously the plot mirrors the underlying distribution (mixture of normals centered at -0.5 and 0.5) of legislator scores. You can play with the model by changing the underlying distribution or by changing the radius. Here’s the result when I change the distribution of legislator scores to <span class="math inline">\(\textrm{Beta}(\frac{1}{2}, \frac{1}{2})\)</span> and decrease the radius to 0.27:</p>
+<p><img src="/post/2018-11-09-simulating-voting-in-a-legislative-body_files/senate2.png" /></p>
+<p>Finally, let’s look at a plot using the conservative/progressive voting method. The code <code>tally_results(min_score = 0, max_score = 1, radius = 0, number_bills = 100, granularity = 100)</code> yields the following:</p>
+<p><img src="/post/2018-11-09-simulating-voting-in-a-legislative-body_files/senate3.png" /></p>
+<p>The general shape of this graph is impervious to changes in the distribution of legislator scores - there is always a range in which every bill passes and a range in which no bill passes, connected by a (usually steep) line.</p>
+<p>Later, perhaps I can make this model more realistic by incorporating the role of committees in producing and pushing legislation through the chamber.</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<script async src="//yihui.name/js/center-img.js"></script>
+
+  
+  <hr/>
+  &copy; Logan Gilbert 2018-present
+  
+  </footer>
+  </body>
+</html>
+

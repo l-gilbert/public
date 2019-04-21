@@ -1,0 +1,94 @@
+---
+title: "Questions and Holes"
+output: html_document
+---
+
+*This page was inspired by [Patrick Collison's page](https://patrickcollison.com/questions).*
+
+The standard pairing is Q & A, but when you're working on the frontier, it's more natural for a question to be coupled to a hole - something missing in society - than to an answer. These are some questions and holes that I'd like to answer/fill. 
+
+# **Information Processing Tools**
+
+**Guided-x Software**
+
+Three possible values of x: decision-making, data analysis, and mathematical modeling. In each case, imagine a GUI that guided the user through the process, eliciting the relevant parameters and offering advice about how to proceed. Basically a decision theorist/statistician/applied mathematician in a box. 
+
+Is it possible to organize decision problems in a sensible way and aggregate the solutions from the decision theory literature to suggest optimal strategies for common problems, like whether to buy a house? Getting the user to specify their decision problem and parameters in a formal way would take some work, but could be very valuable. 
+
+Methodological errors in statistical analyses are common. Better statistical education is one part of a solution, but specialization seems to require scientists to focus more and more on their science and less and less on peripheral activities. Insofar as it's possible to formalize the decision-making process of a statistician, it seems like such a thing should be done. Note that this is more than just R or Stata: the software I'm envisioning would guide one through the experiment, from design to data presentation, suggesting functions and soliciting user input along the way. 
+
+My life trajectory is not likely to take me near the mathematical modeling project, so I'll skip discussion of that. The decision-making software might be prized by nerds or by analytically-minded managers. The statistical software would make it much easier for scientists to design their experiments and analyze them without worrying about attaining sufficient power or implicitly testing too many hypotheses. Such a tool seems to me like it will inevitably come into existence; it's just a question of when and by whom.  
+
+**Tools for organizing and/or evaluating a body of evidence**
+
+Literature review tools help solve the problem of organizing a body of evidence, though I expect we can do bettter. 
+
+The problem of evaluation is harder. To evaluate a body of evidence you need to be able to assign values to each piece of evidence according to its relevance, methodological rigor, and direction, and then sum across all pieces of evidence. Perhaps there are already good statistical techniques to do this, but as far as I know there's no software to intuitively guide such a calculation. It would be pretty cool to quantify the value of an entire research literature. 
+
+
+# **Media**
+
+**Written nonfiction between 10 and 100 pages in length**
+
+This is approximately 3,000 to 30,000 words, or 10 to 100 minutes of read time. Presumably it's not economically viable to publish works of this length as a book. Newspapers, magazines, and online publications produce content at the lower end of this range, but rarely at the higher end. There may be a whole range of ideas which have gone unexplored simply because they require coverage in this many words. 
+
+It would be interesting to see a publication with works exclusively in this range of lengths. Of course, the publication needs a substantive theme. One possibility would be a news organization covering medium-term issues - i.e. the happenings of this quarter or year. The space would also allow for longer digressions to place events in historical context, explain underlying economic concepts, etc. The trouble would be making the finances work. Perhaps it could be billed as a luxury brand, with PhD writers and intellectual-type readers. 
+
+**Single-issue blogs and longform podcasts**
+
+Tyler Cowen advocated for the former in his interview with Patrick Collison, and Rob Wiblin has written about the latter. Both could be viewed as special cases of the above hole. 
+
+# **Academia**
+
+**Valuation of non-research contributions**
+
+There are many ways besides academic publication for a PhD to contribute to our societal understanding of a subject: teaching, mentoring, writing textbooks or popular books, participating in interviews, blogging, developing software,...
+
+But in the end there is only one well-trodden career path (professor) that allows people to do these things, and that path overwhelmingly incentivizes academic publication over all other forms of contribution. 
+
+The net result, I think, is an oversupply of intellectual trailblazers and a relative undersupply of trail*pavers* - people who make it easier for others to traverse the same route. The question is what to do about it. 
+
+One idea is to find a decent way of quantifying the impact of non-research activities, using a unit like 'total knowledge added'. If such a metric could be easily computed/accessed by hiring committees, it might hold some weight against the simpler metric of total publications. 
+
+Another idea is to create new types of research institutions which earn their money differently than universities. At a university, a researcher is effectively paid to teach, which leaves lots of time for research. But one could imagine a similar institution in which the researcher is paid to publish popular articles, collaborate on a textbook, provide media commentary, or something else. The question is whether such an arrangement could be profitable, which would largely depend on how large an audience the institution could reach. 
+
+**Textbooks**
+
+Despite being written by experts, most textbooks are lousy to read - math texts are generally too dense and texts from other subjects often too fluffy. Often you can find some pretty good lecture notes online somewhere, but there's no widely-used repository. I'll have to think more about the incentives involved here and how we can modify the market to ecourage the writing and widespread adoption of better books. 
+
+
+# **Miscellany**
+
+**Tools for autodidacts**
+
+Learning new substantive things on your own is hard - you don't understand how different fields connect, what's supposed to be hard or how long things ought to take, or what the good resources are. It'd be cool to have a site similar to StackExchange where people post what they're interested in learning, along with their parameters (amount of time to study, current/desired level of competence, buget, etc) and the community sets a curriculum for them. 
+
+**Radical transformation of local government**
+
+If you attempt and succeed to change federal government, the effects are enormous. Unfortunately for you, everyone else also knows this, and so change at the federal level is highly competitive. This decreases your probability of success and virtually ensures you'll need to compromise (perhaps substantially) if you do succeed. The same level of competitiveness does not exist over the governance of, e.g. Kansas City, MO. It seems that well-run local campaigns for very radical policies would stand a much greater chance of success and provide ground for potential scale-ups. Why aren't there more cities with esoteric policies? 
+
+[One possibility is that people just aren't actually that interested in changing the world, à la Robin Hanson's *The Elephant in the Brain*. It's easy to vote and voice your opinions loudly but hard to do real political work.]
+
+**Self-evident wisdom**
+
+There are quotes that everyone reads and immediately perceives as profound. How is it that we can so quickly recognize deep insight when it's well-stated? What does this say about our minds, about the authors of such quotes, and about wisdom itself?
+
+**Growth**
+
+How do we maximize our rate of long-term economic growth? 
+
+**Questions and Holes**
+
+How do you find more good questions and holes in the world? How can you get others to see them too?
+
+**Fiction featuring unintelligent people**
+
+Say your IQ is one standard deviation below the mean. You're not classified as cognitively disabled, but you'll have trouble performing most jobs and solving some problems of adult life. Where do you work? What do you like to do in your spare time? What sort of future do you hope for? What do you struggle with? The lives of this demographic seem underrepresented in popular media. 
+
+**Fancy restaurants**
+
+Why do they always serve small plates? Are they just able to get away with not serving you enough because you're coming as much for the sophistication as to sate your hunger? Are takeout boxes to be avoided at all costs lest they detract from the restaurant's aesthetic? I'm flummoxed. 
+
+**The Good Life**
+
+What would make today a good day? [from Jordan Peterson]

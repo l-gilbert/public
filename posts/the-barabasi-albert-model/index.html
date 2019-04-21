@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Barabasi-Albert Model | Logan Gilbert</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async src="path-to-mathjax/MathJax.js?config=TeX-AMS_CHTML"></script>
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/projects/">Projects</a></li>
+      
+      <li><a href="/essays/">Essays</a></li>
+      
+      <li><a href="/qh/">Q &amp; H</a></li>
+      
+      <li><a href="/posts/">Blog</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">The Barabasi-Albert Model</span></h1>
+
+<h2 class="date">2018/10/19</h2>
+</div>
+
+<main>
+<p>Take the network of websites, where each node is a site and each link is a&hellip;hyperlink. A handful of sites (Facebook, Google, Amazon) have an enormous number of links to them, while most sites have only a handful of links. To be more precise, the degree distribution follows a power law, i.e. $f(x) \propto x^{-k}$ for some value of k. The question arises: why are the degrees distributed in this way? One mechanism proposed is preferential attachment: new sites preferentially attach to existing hubs. This is the basic idea behind the Barabasi-Albert model, which is an algorithm used to generate random graphs.</p>
+
+<p>I wanted to run the Barabasi-Albert model on my own machine to test the degree distribution that it generates. There is an implementation of the model in Python using the NetworkX package, but for my purposes today I needed to rewrite it myself.<br />
+First we import the required packages:</p>
+
+<pre><code>import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+import random as rd
+</code></pre>
+
+<p>Next I define a function which will return the degree distribution of an input graph as a list.</p>
+
+<pre><code># Computes the degree distribution of an input graph
+def Distribution(graph): 
+    DegreeList = sorted([d for n, d in graph.degree()])  
+
+    degreeCount = [0]*(max(DegreeList)+1)
+    for n in DegreeList:
+        degreeCount[n] = degreeCount[n] + 1 
+
+    degreeDistribution = [n * (1/float(len(DegreeList))) for n in degreeCount]
+    return degreeDistribution
+</code></pre>
+
+<p>The next function runs the BA model itself and is the most complex piece of the code. You&rsquo;ll notice that the function returns several items - the degree distributions of three graphs, the average clustering coefficient over time, and a tracker of the degree of select nodes over time. The standard implementation of the model in NetworkX makes it difficult or impossible to access or compute all of this data, which is why I needed to write my own implementation.</p>
+
+<pre><code>G = nx.complete_graph(4)
+
+# Implements the Barabasi-Albert model. 
+# Returns the degree distribution of the graph at select points and tracks degree dynamics. 
+# DistributionPoints is a list of time steps at which to compute the degree distribution.
+def BA_Model(N, m, InitialGraph, DistributionPoints):
+    G = InitialGraph
+    # Create list where the nth entry holds the degree of the nth node
+    DegreeList = [3,3,3,3]
+    # Initialize lists for tracking degree dynamics, degree distribution, and average clustering coefficient later
+    Degrees0 = [3]
+    Degrees100 = []
+    Degrees1000 = []
+    DegreeDistributions = []
+    AvgClustering = []    
+    
+    # Add new nodes and preferentially attach to existing nodes    
+    for n in range(m,N):
+        # Add new node to graph
+        G.add_node(n)
+        # Randomly select nodes for new node to attach to
+        NewEdgeTargets = []
+        NewEdgeTargets = np.random.choice(a = range(n), size = m, replace = False, p = [i/float(sum(DegreeList)) for i in DegreeList]) 
+        # Add to list to reflect that the newly-added node will have m connections
+        DegreeList.append(m)
+        
+        # Update lists to reflect new edges
+        for j in NewEdgeTargets:
+            DegreeList[j] = DegreeList[j] + 1
+            G.add_edge(n,j)
+        
+        # Compute and track average clustering coefficient
+        AvgClustering.append(nx.average_clustering(G))
+        
+        # Compute and report the degree distribution at the desired time steps
+        if n in DistributionPoints:
+            DegreeDistributions.append(Distribution(G))
+                            
+        # Track degree of selected nodes over time
+        Degrees0.append(DegreeList[0])
+        if n &gt;= 100: 
+            Degrees100.append(DegreeList[100])
+        if n &gt;= 1000: 
+            Degrees1000.append(DegreeList[1000])    
+    
+    return DegreeDistributions, AvgClustering, Degrees0, Degrees100, Degrees1000
+</code></pre>
+
+<p>Now that the relevant functions are defined, we can run the algorithm and plot the results:</p>
+
+<pre><code># Run the algorithm and record the results
+Results = BA_Model(2500,4,nx.complete_graph(4),[100,1000,2450])
+         
+# Define x and y variables for plotting degree distributions 
+x1 = [i for i in range(len(Results[0][0]))]
+y1 = Results[0][0]
+x2 = [i for i in range(len(Results[0][1]))]
+y2 = Results[0][1]
+x3 = [i for i in range(len(Results[0][2]))]
+y3 = Results[0][2]  
+
+
+# Plot degree distribution and line of best fit with log-log scale
+from matplotlib import style
+style.use('ggplot')
+plt.subplot(1,2,1)
+plt.loglog(x1, y1, 'ro', x2, y2, 'bo', x3, y3, 'go')
+plt.title(&quot;Degree Distribution&quot;)
+plt.xlabel(&quot;k&quot;)
+plt.ylabel(&quot;p(k)&quot;)
+plt.show() 
+
+
+# Plot cumulative degree distribution
+CumDegree1 = np.cumsum(y1)
+CumDegree2 = np.cumsum(y2)
+CumDegree3 = np.cumsum(y3)
+plt.subplot(1,2,2)
+plt.plot(x1,CumDegree1, 'ro', x2, CumDegree2, 'bo', x3, CumDegree3, 'go')
+plt.title(&quot;Cumulative Degree Distribution&quot;)
+plt.xlabel(&quot;k&quot;)
+plt.ylabel(&quot;Cumulative Frequency&quot;)
+plt.show() 
+
+   
+# Plot average clustering coefficient over time
+plt.figure()
+plt.plot([i for i in range(len(Results[1]))], Results[1])
+plt.title(&quot;Average Clustering Coefficient Over Time&quot;)
+plt.xlabel(&quot;t&quot;)
+plt.ylabel(&quot;Average Clustering Coefficient&quot;)
+plt.show()
+
+
+# Plot degree dynamics over time
+plt.figure()
+x_1 = [i for i in range(len(Results[2]))]
+x_2 = [i for i in range(len(Results[3]))]
+x_3 = [i for i in range(len(Results[4]))]
+plt.plot(x_1, Results[2], 'ro', x_2, Results[3], 'bo', x_3, Results[4], 'go')
+plt.title(&quot;Degree of Selected Nodes Over Time&quot;)
+plt.xlabel(&quot;t&quot;)
+plt.ylabel(&quot;k&quot;)
+plt.show()
+</code></pre>
+
+<p>Below, you can see the plots generated. The first shows the degree distribution, $p(k),$ on a log-log plot. The different colors are for graphs with 100, 1000, and 2500 nodes. The plot is obviously linearish, suggestive of a power law distribution. Next to that plot you&rsquo;ll see the cumulative degree distribution, which clearly shows that most of the nodes have &lt;20 links while at least one node has 160+ edges.</p>
+
+<p><img src="/post/2018-10-19-the-barabasi-albert-model_files/BA_Model_1.png" alt="" /></p>
+
+<p>Here we have the average clustering coefficient over time. The seed graph is $K_4,$ so naturally the coefficient starts at 1. But as more edges are preferentially added, the develops a handful of large hubs but little community structure; the clustering coefficient reflects this change.</p>
+
+<p><img src="/post/2018-10-19-the-barabasi-albert-model_files/BA_Model_2.png" alt="" /></p>
+
+<p>Finally, we have the trajectory of selected nodes over time. These nodes were added at different times - hence the green and blue lines stopping short of the full 2500 iterations of the algorithm. The red node had more time to add links, and this is reflected in the graph below.</p>
+
+<p><img src="/post/2018-10-19-the-barabasi-albert-model_files/BA_Model_3.png" alt="" /></p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<script async src="//yihui.name/js/center-img.js"></script>
+
+  
+  <hr/>
+  &copy; Logan Gilbert 2018-present
+  
+  </footer>
+  </body>
+</html>
+

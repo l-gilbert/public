@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Essays on Logan Gilbert</title>
+    <link>/essays/</link>
+    <description>Recent content in Essays on Logan Gilbert</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 05 Apr 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/essays/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Folk Wisdom</title>
+      <link>/essays/folk-wisdom/</link>
+      <pubDate>Fri, 05 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/essays/folk-wisdom/</guid>
+      <description>There are a great number of aphorisms in the English language, each containing a piece of time-tested wisdom. I sifted through hundreds, mostly listed on Wikipedia, and organized the ones I found interesting. Unsurprisingly, many are prescriptions re: how to be successful/live a good life, and I&amp;rsquo;ve divided those according to whether they are more applicable to individuals or groups. Others, as stated, are merely descriptions of human nature/external reality, but many of these contain an unspoken implication, and so are effectively prescriptions as well.</description>
+    </item>
+    
+    <item>
+      <title>A Thing Worth Doing</title>
+      <link>/essays/a-thing-worth-doing/</link>
+      <pubDate>Sun, 24 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/essays/a-thing-worth-doing/</guid>
+      <description>Pick an object of your interest, hypothetical or real. Ignoring costs, there is only one sensible way to interact with that object: improve it. If it is not yet real, build it. If it is real but unfinished, finish it. If it is damaged, repair it. If it is causing harm, destroy it. If it&amp;rsquo;s perfect (is it?), leave it be.
+&amp;mdash;Pick a Problem&amp;mdash; Because initiative is scarce, any of these acts will be high value.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Genetics Data Cleaning | Logan Gilbert</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async src="path-to-mathjax/MathJax.js?config=TeX-AMS_CHTML"></script>
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/projects/">Projects</a></li>
+      
+      <li><a href="/essays/">Essays</a></li>
+      
+      <li><a href="/qh/">Q &amp; H</a></li>
+      
+      <li><a href="/posts/">Blog</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Genetics Data Cleaning</span></h1>
+
+<h2 class="date">2018/12/20</h2>
+</div>
+
+<main>
+
+
+
+<p>This code accompanies two datasets on the effects of 10,000 SNPs (single-nucleotide polymorphisms) on two traits, A and B. Each dataset includes an ID number indicating the location of the SNP on the chromosome, the two alleles (A, T, C, or G) that occur in that position, the frequency with which the alleles occur, an estimate of the effect size of the SNP on trait A or B, and the z-score produced when the null hypothesis (that the given SNP has no effect on the given trait) was tested.</p>
+<p>The goal is to clean the data and then render a QQ plot of the empirical CDF of p-values vs. the theoretical CDF that would result if the null hypothesis were true for all SNPs.</p>
+<p>#Part 1: Cleaning</p>
+<p>Move the datasets into the working directory, then define</p>
+<pre class="r"><code>A = read.delim(&quot;A.txt&quot;)
+B = read.delim(&quot;B.txt&quot;)</code></pre>
+<p>For this dataset, all SNPs are intended to be on chromosome 22. Let’s check that’s actually the case.</p>
+<pre class="r"><code>chromosomes = function(dataset) {
+  count = 0 
+  for (i in dataset[,2]) {if (i != 22) {count = count + 1}}
+  print(count)}
+
+chromosomes(A)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>chromosomes(B)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>The count indicates that no SNPs are off chromosome 22, so no deletions are necessary for this step.</p>
+<p>Next we’ll check that each SNP has a unique identifier - if not, we won’t know which SNP the corresponding data belongs to.</p>
+<pre class="r"><code>SNPs = function(dataset) {
+  count = 0
+  for (row in 1:nrow(dataset)) {if (is.na(dataset[row, 1])) {count = count + 1}}
+  print(count)}
+
+SNPs(A)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>SNPs(B)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>Both counts are zero, so again no action is necessary.</p>
+<p>There are missing values in some of the other columns (e.g. z-scores) which we will need to produce the plot later. Since the data is useless without these values, we’ll delete any rows with missing values in columns 4 through 9.</p>
+<pre class="r"><code>clean = function(dataset, indicator){
+  delete = c()
+  for (row in 1:nrow(dataset)) {
+    missedVals = is.na(dataset[row, 4:9])
+    count = 0
+    for (i in missedVals) {if (i == TRUE) {count = count + 1}}
+    if (count &gt; 0) {delete = c(delete, row)}}
+  dataset = dataset[-c(delete), ]
+  
+  #The indicator should be set to TRUE for A and FALSE for B
+  #These lines write the previous changes globally so they&#39;ll be available at the next step
+  if(indicator == TRUE){assign(&#39;A&#39;, dataset,envir=.GlobalEnv)}
+  if(indicator == FALSE){assign(&#39;B&#39;, dataset,envir=.GlobalEnv)}}
+
+clean(A, TRUE)
+clean(B, FALSE)</code></pre>
+<p>Next we’ll check for problems with the listed alleles. Let’s see what values A1 (allele 1) and A2 are assigned:</p>
+<pre class="r"><code>levels(A[,4])</code></pre>
+<pre><code>## [1] &quot;A&quot; &quot;C&quot; &quot;G&quot; &quot;T&quot;</code></pre>
+<pre class="r"><code>levels(A[,5])</code></pre>
+<pre><code>##  [1] &quot;A&quot;  &quot;AA&quot; &quot;AC&quot; &quot;AG&quot; &quot;AT&quot; &quot;C&quot;  &quot;CA&quot; &quot;CC&quot; &quot;CG&quot; &quot;CT&quot; &quot;D&quot;  &quot;G&quot;  &quot;GA&quot; &quot;GC&quot;
+## [15] &quot;GG&quot; &quot;GT&quot; &quot;T&quot;  &quot;TA&quot; &quot;TC&quot; &quot;TG&quot; &quot;TT&quot;</code></pre>
+<pre class="r"><code>levels(B[,4])</code></pre>
+<pre><code>## [1] &quot;A&quot; &quot;C&quot; &quot;G&quot; &quot;T&quot;</code></pre>
+<pre class="r"><code>levels(B[,5])</code></pre>
+<pre><code>##  [1] &quot;A&quot;  &quot;AC&quot; &quot;AG&quot; &quot;AT&quot; &quot;C&quot;  &quot;CA&quot; &quot;CC&quot; &quot;CG&quot; &quot;CT&quot; &quot;D&quot;  &quot;G&quot;  &quot;GA&quot; &quot;GC&quot; &quot;GG&quot;
+## [15] &quot;GT&quot; &quot;T&quot;  &quot;TA&quot; &quot;TC&quot; &quot;TG&quot; &quot;TT&quot;</code></pre>
+<p>We see that A1 is always listed with an acceptable value (A, T, C, or G), but A2 is not. Presumably double entries like AA are typos which we should correct; all other nonstandard entries are deleted by the following code:</p>
+<pre class="r"><code>doubles = function(dataset, indicator){
+  #Replace duplicates with singletons
+  delete = c()
+  for (row in 1:nrow(dataset)) {
+    if (dataset[row, 5] == &quot;AA&quot;) {dataset[row, 5] = &quot;A&quot;}
+    if (dataset[row, 5] == &quot;TT&quot;) {dataset[row, 5] = &quot;T&quot;}
+    if (dataset[row, 5] == &quot;CC&quot;) {dataset[row, 5] = &quot;C&quot;}
+    if (dataset[row, 5] == &quot;GG&quot;) {dataset[row, 5] = &quot;G&quot;}
+  
+  #If A1 or A2 are listed as anything other than A,T,C,G, delete the row
+    if (!(dataset[row, 4] %in% c(&quot;A&quot;, &quot;T&quot;, &quot;C&quot;, &quot;G&quot;))) {delete = c(delete, row)}
+    if (!(dataset[row, 5] %in% c(&quot;A&quot;, &quot;T&quot;, &quot;C&quot;, &quot;G&quot;))) {delete = c(delete, row)}}
+
+  dataset = dataset[-c(delete), ]
+  
+  #Write changes globally
+  if(indicator == TRUE){assign(&#39;A&#39;, dataset, envir=.GlobalEnv)}
+  if(indicator == FALSE){assign(&#39;B&#39;, dataset, envir=.GlobalEnv)}}
+
+doubles(A, TRUE)
+doubles(B, FALSE)</code></pre>
+<p>It would also be problematic if the two listed alleles are identical; here we count how many times this occurs.</p>
+<pre class="r"><code>check = function(dataset){
+  #Check if A1 = A2
+  count = 0
+  for (row in 1:nrow(dataset)) {
+    if (identical(dataset[row, 4], dataset[row, 5])) {count = count + 1}}
+  print(count)}
+
+check(A)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>check(B)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>The count indicates that A1 is never listed the same as A2, so we can move on to checking the minor allele frequency (MAF). The MAF is the frequency of the less common allele and should therefore be a number between 0 and 0.5. Some of the listed values, however, are negative or greater and 0.5. Here I assume that the negatives are typos and convert them to their positive counterparts. I also replace values greater than 0.5 with 1-MAF under the assumption that the listed value is actually the major allele frequency.</p>
+<pre class="r"><code>MAF = function(dataset, indicator){
+  for (row in 1:nrow(dataset)) {
+    #Switch sign of MAF if listed as negative.
+    if (dataset[row, 6] &lt; 0) {dataset[row, 6] = -1*dataset[row, 6]}
+    #Also check if MAF &gt; 0.5. Replace with 1-MAF if so.
+    if (dataset[row, 6] &gt; 0.5) {dataset[row, 6] = 1 - dataset[row, 6]}}
+  
+  #record changes globally
+  if(indicator == TRUE){assign(&#39;A&#39;, dataset, envir=.GlobalEnv)}
+  if(indicator == FALSE){assign(&#39;B&#39;, dataset, envir=.GlobalEnv)}}
+
+MAF(A, TRUE)
+MAF(B, FALSE)</code></pre>
+<p>Although we won’t need it for the plot, the sample size N used to estimate the effect size is sometimes listed as a decimal. Here I just round each value to the nearest integer.</p>
+<pre class="r"><code>N = function(dataset, indicator){
+  for (row in 1:nrow(dataset)) {
+    #Round values of N to nearest integer
+    dataset[row, 7] = round(dataset[row, 7], digits = 0)}
+
+  if(indicator == TRUE){assign(&#39;A&#39;, dataset, envir=.GlobalEnv)}
+  if(indicator == FALSE){assign(&#39;B&#39;, dataset, envir=.GlobalEnv)}}
+
+N(A, TRUE)
+N(B, FALSE)</code></pre>
+<p>Finally, to ensure we’re only studying SNPs for which there is complete data available (as well as for convenience), we merge the two files, throwing out any rows (SNPs) that weren’t included in both files. We’ll call this new dataset ‘C’.</p>
+<pre class="r"><code>C = merge(A, B, by.x = &quot;SNP&quot;, by.y = &quot;SNP&quot;)</code></pre>
+<p>#Part 2: QQ Plot</p>
+<p>We want to plot the p-values, which we’ll need to calculate from the z-scores.</p>
+<pre class="r"><code>#Holders for p-values
+psA = c()
+psB = c()
+
+for (row in 1:nrow(C)) {
+  zA = C[row, 9]
+  zB = C[row, 19]
+  pA = pnorm(zA)
+  pB = pnorm(zB)
+  if (zA &gt; 0) {pA = 1-pA}
+  if (zB &gt; 0) {pB = 1-pB}
+  pA = 2*pA
+  pB = 2*pB
+  psA = c(psA, pA)
+  psB = c(psB, pB)}
+psA = sort(psA)
+psB = sort(psB)</code></pre>
+<p>If the null hypothesis were true for every SNP, we would expect the p-values to be uniformly distributed (generating a uniform distribution of values is the whole point of transforming the z-scores into p-values). Thus we generate a uniform sequence to act as the CDF under the null.</p>
+<pre class="r"><code>CDFnull = seq(from = 0, to = 1, length.out= length(psA))</code></pre>
+<p>Finally, we create the QQ plot itself.</p>
+<pre class="r"><code>qqplot(CDFnull, 
+       psA, 
+       xlab = &quot;CDF under Null Hypothesis&quot;, 
+       ylab = &quot;Empirical CDF&#39;s&quot;,
+       main = &quot;QQ Plot of Empirical vs. Theoretical p-Values&quot;,
+       log = &quot;xy&quot;)</code></pre>
+<pre><code>## Warning in xy.coords(x, y, xlabel, ylabel, log): 1 x value &lt;= 0 omitted
+## from logarithmic plot</code></pre>
+<pre class="r"><code>#Add the p-values for trait B
+points(CDFnull, psB, col = &quot;red&quot;, pch =19)
+abline(0,1)
+legend(&quot;bottomright&quot;, 
+       legend = c(&quot;Trait A p-Values&quot;, &quot;Trait B p-Values&quot;), 
+       col = c(&quot;black&quot;, &quot;red&quot;), 
+       pch = c(19, 19))</code></pre>
+<p><img src="/posts/2018-12-20-genetics-data-cleaning_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Notice that the empirical CDF’s lie below the 45-degree line. This means that a given quantile (percentage of the data) has a lower value in the datasets than would have occurred under the null hypothesis. In plainer terms, there are more small p-values in reality than in theory. We might be most interested in the number of SNPs with particularly small p-values, e.g. p &lt; 0.01. At y=0.01, the black line is to the right of the red line, indicating that more of trait A’s p-values are very small. We should therefore expect that more SNPs affect trait A than trait B.</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<script async src="//yihui.name/js/center-img.js"></script>
+
+  
+  <hr/>
+  &copy; Logan Gilbert 2018-present
+  
+  </footer>
+  </body>
+</html>
+

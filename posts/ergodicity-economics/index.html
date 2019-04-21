@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ergodicity Economics | Logan Gilbert</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async src="path-to-mathjax/MathJax.js?config=TeX-AMS_CHTML"></script>
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/projects/">Projects</a></li>
+      
+      <li><a href="/essays/">Essays</a></li>
+      
+      <li><a href="/qh/">Q &amp; H</a></li>
+      
+      <li><a href="/posts/">Blog</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Ergodicity Economics</span></h1>
+
+<h2 class="date">2019/01/10</h2>
+</div>
+
+<main>
+
+
+<p>This is a curation of the highlights from some <a href="https://ergodicityeconomics.com/lecture-notes/">lecture notes</a> by Ole Peters and Alexander Adamou.</p>
+
+<h3 id="defining-ergodicity">Defining Ergodicity</h3>
+
+<p>Classical economics is based on the assumption that the rational economic decision is the one that maximizes the actor&rsquo;s expected value. And indeed, individuals should act to maximize something, but expected value is not quite that something. The expected value measures what happens across individuals, but individuals want to know what will happen across time. You might expect these metrics to be effectively identical; you&rsquo;d be wrong. Here&rsquo;s a concrete example.</p>
+
+<p>Consider a game in which your wealth increases by 50% with probability <sup>1</sup>&frasl;<sub>2</sub> and decreases by 40% with probability <sup>1</sup>&frasl;<sub>2</sub>. Should you play the game? Computing the expected value indicates that you should. If we represent your wealth over time as $w(t)$, then your expected value after a single play is $$w(t+1) = \frac{1}{2}(1.5w(t)) + \frac{1}{2}(0.6w(t)) = 1.05w(t),$$ i.e. you &lsquo;expect&rsquo; to gain 5%. This is appealing - exponential growth.</p>
+
+<p>Let&rsquo;s take a different approach to computing the growth over time. We would like to know the growth rate $$r = \lim_{T \to \infty}(\frac{w(t+T)}{w(t)})^{\frac{1}{T}}.$$ If we let $n_1$ denote the number of times wealth increases and $n<em>2$ denote the number of times wealth decreases, then $$r = \lim</em>{T \to \infty}1.5^\frac{n_1}{T}0.6^\frac{n<em>2}{T}$$. Since the probabilities of winning and losing are each <sup>1</sup>&frasl;<sub>2</sub>, $$\lim</em>{T \to \infty}\frac{n<em>1}{T} = \lim</em>{T \to \infty}\frac{n_2}{T} = 0.5$$. Thus $r = 1.5^{0.5}0.6^{0.5} \approx 0.95$. Uh-oh.</p>
+
+<p>Here&rsquo;s a simulation:</p>
+
+<pre><code class="language-python">import numpy as np
+from numpy import random as rd
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+time = 250
+time_avg = [0.949**x for x in range(time)]
+wealth1 = np.array([1.0])
+wealth2 = np.array([1.0]*100)
+avg2 = np.array([1.0])
+wealth3 = np.array([1.0]*10000)
+avg3 = np.array([1.0])
+wealth4 = np.array([1.0]*1000000)
+avg4 = np.array([1.0])
+exp_value = [1.05**x for x in range(time)]
+
+for i in range(time):
+    outcomes1 = rd.choice([0.6, 1.5], size = 1)
+    wealth1 = np.append(wealth1, wealth1[-1]*outcomes1)
+       
+    outcomes2 = rd.choice([0.6, 1.5], size = len(wealth2), replace = True)
+    for j in range(len(wealth2)):
+        wealth2[j] = wealth2[j]*outcomes2[j]
+    avg2 = np.append(avg2, np.mean(wealth2))       
+
+    outcomes3 = rd.choice([0.6, 1.5], size = len(wealth3), replace = True)
+    for j in range(len(wealth3)):
+        wealth3[j] = wealth3[j]*outcomes3[j]
+    avg3 = np.append(avg3, np.mean(wealth3))
+    
+    outcomes4 = rd.choice([0.6, 1.5], size = len(wealth4), replace = True)
+    for j in range(len(wealth4)):
+        wealth4[j] = wealth4[j]*outcomes4[j]
+    avg4 = np.append(avg4, np.mean(wealth4))
+
+plt.yscale('log')
+plt.plot(range(time), time_avg, 
+         range(time+1), wealth1, 
+         range(time+1), avg2, 
+         range(time+1), avg3, 
+         range(time+1), avg4, 
+         range(time), exp_value)
+plt.ylabel('Wealth')
+plt.xlabel('Time')
+plt.title('Evolution of Average Wealth Over Time')
+plt.legend(('Time Average', 'N=1', 'N=100', 'N=10,000', 'N=1,000,000', 'Expected Value'))
+plt.show();
+</code></pre>
+
+<p><img src="/post/2019-01-10-ergodicity-economics_files/ergodicity.png" alt="" /></p>
+
+<p>Clearly the trajectory of an individual is very different from the trajectory of the average of many individuals. This may actually be the norm, so in the special case where time averages are the same as expected values, we call the measured quantity <strong>ergodic</strong>. To be formal, an observable $A$ is called ergodic if $\lim<em>{\Delta t \to \infty}\frac{1}{\Delta t}\int</em>{t}^{t + \Delta t}A(s)ds = \lim_{N \to \infty}\frac{1}{N}\sum_i^N A_i(t).$</p>
+
+<p>When our quantity of interest is known to be ergodic, we can use the expected value to make decisions. But otherwise we should consider the time average growth rate. Doing so is also very helpful, as it condenses a distribution of outcomes into a single number (which is more informative than just the mean or variance) and thereby allows simple comparison of alternatives.</p>
+
+<p>This framework - that people should seek to maximize the growth rate of their money, not the expected value - resolves some inconsistencies in traditional utility theory. One example is the insurance paradox. Insurers inherently need to price insurance higher than their expected expenses, which means that if the insured parties use an expected value framework, they will never want to purchase insurance. Yet insurance contracts of all kinds exist worldwide. The authors show that this paradox ceases to be puzzling if we assume the insured parties are seeking to maximize the growth rate of their money.</p>
+
+<h3 id="wealth-inequality">Wealth Inequality</h3>
+
+<p>If we are willing to model the evolution of an individual&rsquo;s wealth with a stochastic process (e.g. geometric Brownian motion), then we can also model the wealth of a population and hence examine the dynamics at the population level. By definition, if a person&rsquo;s wealth $w$ follows GBM, then $$dw = w(\mu dt + \sigma dW_t)$$ where $\mu$ and $\sigma$ are constants encoding the drift and volatility, respectively, and $W_t$ is a standard Brownian motion. This stochastic differential equation has solution $$w(t) = w(0)\exp[(\mu - \frac{\sigma^2}{2})t + \sigma W_t].$$ Taking the logarithm of both sides gives us $$\ln w(t) = \ln w(0) + (\mu - \frac{\sigma^2}{2})t + \sigma W_t.$$</p>
+
+<p>We can characterize the distribution of $\ln w(t)$ by recognizing that all the randomness in the previous equation is contained in $W_t$, which is Normally distributed: $W_t \sim N(0,t)$. Therefore $$\ln w(t) \sim N(\ln w(0) + (\mu - \frac{\sigma^2}{2})t, \sigma^2 t).$$ In other words, wealth will be log-normally distributed across the population. Moreover, the variance will increase linearly in time.</p>
+
+<p>We would like to measure the inequality of wealth in the population. There are many ways to do so; one is to define the inequality at time $t$ as $$J(t) = \int<em>0^t g</em>{\langle \rangle} (s) - g\bar (s) ds$$ where $g_{\langle \rangle} (s)$ is the growth rate of the expected value of wealth and $g\bar (s)$ is the time-average growth rate of an individual. Under the geometric Brownian motion regime this turns out to be equivalent to $$J(t) = \ln \mathbb{E}(w(t)) - \mathbb{E}(\ln w(t))$$. Apparently this is a well-known metric, Theil&rsquo;s 2nd index of inequality. The fact that we&rsquo;ve stumbled upon a pre-existing measure of inequality gives some credence to the approach used thus far. $J(t)$ turns out to be $\frac{\sigma^2 t}{2}$, indicating that inequality will increase forever under this model.</p>
+
+<h3 id="reallocation-of-wealth">Reallocation of Wealth</h3>
+
+<p>The model we&rsquo;ve been working with - GBM - is interesting but extremely limited. It doesn&rsquo;t account for any interactions between individuals (e.g. buying/selling goods and services; insurance; gifts; taxation) nor does it even allow for individuals to be born or to die. So here we&rsquo;ll add one small wrinkle to make it slightly more realistic. Suppose we replace our old SDE $dw = w(\mu dt + \sigma dW_t)$ with a new one: $dw_i = w<em>i[(\mu - \psi)dt + \sigma dW</em>{i,t}] + \psi \langle x \rangle_N dt$. Here $\psi$ represents the tax rate and the term $\psi \langle x \rangle_N$ quantifies one&rsquo;s benefits from society. When $\psi &gt; 0$ individual wealths revert towards the mean, but when $\psi &lt; 0$ wealths repel from the mean and in the long-term one finds individuals with wealths large in absolute value, but no middle class. The authors fit the various parameters to U.S. historical data and find that since 1980 the U.S. has had $\psi &lt; 0$.</p>
+
+</main>
+
+  <footer>
+  <script src="//yihui.name/js/math-code.js"></script>
+<script async src="//mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+<script async src="//yihui.name/js/center-img.js"></script>
+
+  
+  <hr/>
+  &copy; Logan Gilbert 2018-present
+  
+  </footer>
+  </body>
+</html>
+
